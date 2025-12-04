@@ -1,121 +1,283 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Smart Plant Green House</title>
+<title>Smart Plant Green House</title>
 
-    <!-- FIX: Firebase v8 (pastikan ini SATU-SATUNYA script Firebase) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        margin: 0;
+        padding: 0;
+        color: #444;
+    }
+
+    h1, h2, h3 {
+        font-weight: 600;
+        color: #d1495b;
+        letter-spacing: 0.5px;
+    }
+
+    /* LOGIN FORM */
+    #loginForm {
+        width: 340px;
+        margin: 120px auto;
+        padding: 35px;
+        background: #ffffffcc;
+        border-radius: 20px;
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.08),
+                    -5px -5px 15px rgba(255,255,255,0.8);
+        text-align: center;
+        animation: fadeIn 0.8s ease;
+        backdrop-filter: blur(6px);
+    }
+
+    #loginForm input {
+        width: 92%;
+        padding: 12px;
+        margin: 10px 0;
+        background: #fff;
+        border: 2px solid #ffb5a7;
+        border-radius: 12px;
+        outline: none;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    #loginForm input:focus {
+        border-color: #f77f94;
+        box-shadow: 0 0 8px rgba(255,180,180,0.6);
+    }
+
+    #loginForm button {
+        width: 95%;
+        padding: 12px;
+        background: linear-gradient(90deg, #f77f94, #ffcad4);
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        margin-top: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    #loginForm button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,180,180,0.6);
+    }
+
+    /* DASHBOARD */
+    #dashboard {
+        width: 90%;
+        max-width: 900px;
+        margin: 40px auto 60px;
+        animation: fadeIn 1s ease;
+    }
+
+    .card {
+        background: #ffffffcc;
+        padding: 25px;
+        border-radius: 22px;
+        margin-bottom: 22px;
+        backdrop-filter: blur(6px);
+        box-shadow: 8px 8px 16px rgba(0,0,0,0.08),
+                    -5px -5px 12px rgba(255,255,255,0.8);
+        transition: 0.3s;
+        border: 2px solid #ffe5d9;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.10);
+    }
+
+    .card h3 {
+        margin-top: 0;
+        color: #d1495b;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card:nth-of-type(1) h3::before {
+        content: "\f043";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        color: #9c6644;
+    }
+
+    .card:nth-of-type(2) h3::before {
+        content: "\f185";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        color: #ffb703;
+    }
+
+    .card:nth-of-type(3) h3::before {
+        content: "\f554";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        color: #9c6644;
+    }
+
+    .value-box {
+        font-size: 36px;
+        font-weight: 700;
+        color: #d1495b;
+        margin-top: 8px;
+        margin-bottom: 5px;
+    }
+
+    span {
+        font-size: 14px;
+        color: #9c6644;
+        font-weight: 500;
+    }
+
+    #logoutBtn {
+        padding: 12px 25px;
+        background: #f28482;
+        color: white;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto 0;
+        font-size: 15px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    #logoutBtn:hover {
+        background: #d55d5d;
+        transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
 </head>
 <body>
 
-    <!-- LOGIN -->
-    <div id="loginForm">
-        <h2>Smart Plant Green House</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn">Login</button>
+<!-- LOGIN -->
+<div id="loginForm">
+    <h2>Smart Plant Green House</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
+    <h1>Dashboard</h1>
+
+    <div class="card">
+        <h3>Kelembaban Tanah</h3>
+        <div class="value-box" id="soilMoisture">-- %</div>
+        <span id="soilStatus"></span>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard" style="display:none;">
-        <h1>Dashboard</h1>
-
-        <div>
-            <h3>Kelembaban Tanah</h3>
-            <div id="soilMoisture">-- %</div>
-            <span id="soilStatus"></span>
-        </div>
-
-        <div>
-            <h3>Tingkat Cahaya</h3>
-            <div id="lightLevel">-- %</div>
-            <span id="lightStatus"></span>
-        </div>
-
-        <div>
-            <h3>Gerakan (PIR)</h3>
-            <div id="motion">--</div>
-            <span id="motionStatus"></span>
-        </div>
-
-        <button id="logoutBtn">Logout</button>
+    <div class="card">
+        <h3>Tingkat Cahaya</h3>
+        <div class="value-box" id="lightLevel">-- %</div>
+        <span id="lightStatus"></span>
     </div>
 
-    <script>
-        // CONFIG WAJIB ADA databaseURL
-        const firebaseConfig = {
-            apiKey: "AIzaSyDM7CbQta097nqWty-qRsQ2otpS9TwKiI8",
+    <div class="card">
+        <h3>Gerakan (PIR)</h3>
+        <div class="value-box" id="motion">--</div>
+        <span id="motionStatus"></span>
+    </div>
+
+    <button id="logoutBtn">Logout</button>
+</div>
+
+<script>
+    const firebaseConfig = {
             authDomain: "minggu-11-5e791.firebaseapp.com",
             databaseURL: "https://minggu-11-5e791-default-rtdb.firebaseio.com",
             projectId: "minggu-11-5e791",
             storageBucket: "minggu-11-5e791.firebasestorage.app",
             messagingSenderId: "573469373520",
             appId: "1:573469373520:web:dc29f317f45c5943590d55"
-        };
+    };
 
-        // INIT FIREBASE V8
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-        const loginForm = document.getElementById("loginForm");
-        const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
 
-        // LOGIN
-        document.getElementById("loginBtn").addEventListener("click", () => {
-            const email = document.getElementById("email").value;
-            const pass = document.getElementById("password").value;
+    document.getElementById("loginBtn").addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        const pass = document.getElementById("password").value;
 
-            auth.signInWithEmailAndPassword(email, pass)
-                .then(() => {
-                    loginForm.style.display = "none";
-                    dashboard.style.display = "block";
-                    listenToSensors();
-                })
-                .catch(err => alert("Login gagal: " + err.message));
+        auth.signInWithEmailAndPassword(email, pass)
+            .then(() => {
+                loginForm.style.display = "none";
+                dashboard.style.display = "block";
+                listenToSensors();
+            })
+            .catch(err => alert("Login gagal: " + err.message));
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        auth.signOut().then(() => {
+            dashboard.style.display = "none";
+            loginForm.style.display = "block";
         });
+    });
 
-        // LOGOUT
-        document.getElementById("logoutBtn").addEventListener("click", () => {
-            auth.signOut().then(() => {
-                dashboard.style.display = "none";
-                loginForm.style.display = "block";
-            });
+    function listenToSensors() {
+        const ref = db.ref("greenhouse/sensors");
+
+        ref.on("value", snapshot => {
+            const d = snapshot.val() || {};
+            updateSoil(d.soilMoisture || 0);
+            updateLight(d.lightLevel || 0);
+            updateMotion(d.motion || false);
         });
+    }
 
-        function listenToSensors() {
-            const ref = db.ref("greenhouse/sensors");
+    function updateSoil(v) {
+        document.getElementById("soilMoisture").innerText = v + " %";
+        document.getElementById("soilStatus").innerText =
+            v < 30 ? "Kering" : v < 70 ? "Cukup" : "Basah";
+    }
 
-            ref.on("value", snapshot => {
-                const d = snapshot.val() || {};
+    function updateLight(v) {
+        document.getElementById("lightLevel").innerText = v + " %";
+        document.getElementById("lightStatus").innerText =
+            v < 30 ? "Redup" : v < 70 ? "Cukup Terang" : "Terang";
+    }
 
-                updateSoil(d.soilMoisture || 0);
-                updateLight(d.lightLevel || 0);
-                updateMotion(d.motion || false);
-            });
-        }
-
-        function updateSoil(v) {
-            document.getElementById("soilMoisture").innerText = v + " %";
-            document.getElementById("soilStatus").innerText =
-                v < 30 ? "Kering" : v < 70 ? "Cukup" : "Basah";
-        }
-
-        function updateLight(v) {
-            document.getElementById("lightLevel").innerText = v + " %";
-            document.getElementById("lightStatus").innerText =
-                v < 30 ? "Redup" : v < 70 ? "Cukup" : "Terang";
-        }
-
-        function updateMotion(v) {
-            document.getElementById("motion").innerText = v ? "Terdeteksi" : "Tidak";
-            document.getElementById("motionStatus").innerText =
-                v ? "Ada Gerakan" : "Aman";
-        }
-    </script>
+    function updateMotion(v) {
+        document.getElementById("motion").innerText = v ? "Terdeteksi" : "Tidak";
+        document.getElementById("motionStatus").innerText =
+            v ? "Ada Gerakan" : "Aman";
+    }
+</script>
 
 </body>
 </html>
